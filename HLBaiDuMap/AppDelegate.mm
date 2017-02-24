@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 
+
 @interface AppDelegate ()
 
 @end
@@ -17,6 +18,22 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.vc = [[ViewController alloc] init];
+    self.nav = [[UINavigationController alloc] initWithRootViewController:self.vc];
+    [self.nav.navigationBar setBarTintColor:[UIColor yellowColor]];
+    
+    /**初始化并且配置mapManager*/
+    self.mapManager = [[BMKMapManager alloc] init];
+    //获取权限
+    BOOL ret = [self.mapManager start:@"ElbaKXorFoMzcY2LFSjnFoIe" generalDelegate:nil];
+    if (!ret) {
+        NSLog(@"AK不正确!");
+    }
+    
+    self.window.rootViewController = self.nav;
+    [self.window makeKeyWindow];
+    
     return YES;
 }
 
