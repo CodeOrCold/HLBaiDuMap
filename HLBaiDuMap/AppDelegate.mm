@@ -26,7 +26,7 @@
     /**初始化并且配置mapManager*/
     self.mapManager = [[BMKMapManager alloc] init];
     //获取权限
-    BOOL ret = [self.mapManager start:@"ElbaKXorFoMzcY2LFSjnFoIe" generalDelegate:nil];
+    BOOL ret = [self.mapManager start:@"" generalDelegate:nil];
     if (!ret) {
         NSLog(@"AK不正确!");
     }
