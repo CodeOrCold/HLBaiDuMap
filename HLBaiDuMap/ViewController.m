@@ -27,10 +27,12 @@
 #define WIDTH self.view.bounds.size.width
 #define HEIGHT self.view.bounds.size.height
 
-@interface ViewController ()<BMKMapViewDelegate>
+@interface ViewController ()<BMKMapViewDelegate, BMKPoiSearchDelegate>
 
 //地图视图
 @property (nonatomic, strong)BMKMapView *mapView;
+
+@property (nonatomic, strong)BMKPoiSearch *search;
 
 @end
 
@@ -57,21 +59,44 @@
     _mapView.minZoomLevel = 100.0;
     _mapView.maxZoomLevel = 1000.0;
     
+    //初始化检索对象
+    _search =[[BMKPoiSearch alloc]init];
+    _search.delegate = self;
+    //发起检索
+    BMKNearbySearchOption *option = [[BMKNearbySearchOption alloc]init];
+    option.pageIndex = 0;
+    option.pageCapacity = 10;
+    CLLocationCoordinate2D coor;
+    coor.latitude = 30.2052212978586;
+    coor.longitude = 120.21039239301257;
+    option.location = coor;
+    option.radius = 1000;
+    option.keyword = @"小吃";
+    BOOL flag = [_search poiSearchNearBy:option];
+    if(flag)
+    {
+        NSLog(@"周边检索发送成功");
+    }
+    else
+    {
+        NSLog(@"周边检索发送失败");
+    }
+    
     self.view = _mapView;
     self.title = @"HLBaiDuMap";
     
 }
 
 -(void)viewDidAppear:(BOOL)animated{
-    BMKPointAnnotation *annotation = [[BMKPointAnnotation alloc] init];
-    CLLocationCoordinate2D coor;
-    coor.latitude = 39.915;
-    coor.longitude = 116.404;
-    annotation.coordinate = coor;
-    annotation.title = @"天安门";
-    annotation.subtitle = @"北京市";
-    
-    [_mapView addAnnotation:annotation];
+//    BMKPointAnnotation *annotation = [[BMKPointAnnotation alloc] init];
+//    CLLocationCoordinate2D coor;
+//    coor.latitude = 30.2052212978586;
+//    coor.longitude = 120.21039239301257;
+//    annotation.coordinate = coor;
+//    annotation.title = @"天安门";
+//    annotation.subtitle = @"北京市";
+//    
+//    [_mapView addAnnotation:annotation];
 
 }
 
@@ -87,6 +112,7 @@
 -(void)viewDidDisappear:(BOOL)animated{
     [_mapView viewWillDisappear];
     _mapView.delegate = nil;
+    _search.delegate = nil;
 
 }
 
@@ -108,6 +134,21 @@
 -(void)mapView:(BMKMapView *)mapView annotationViewForBubble:(BMKAnnotationView *)view{
     NSLog(@"click...");
 
+}
+
+#warning =====BMKSearchDelegate=====
+- (void)onGetPoiResult:(BMKPoiSearch*)searcher result:(BMKPoiResult*)poiResultList errorCode:(BMKSearchErrorCode)error
+{
+    if (error == BMK_SEARCH_NO_ERROR) {
+        //在此处理正常结果
+    }
+    else if (error == BMK_SEARCH_AMBIGUOUS_KEYWORD){
+        //当在设置城市未找到结果，但在其他城市找到结果时，回调建议检索城市列表
+        // result.cityList;
+        NSLog(@"起始点有歧义");
+    } else {
+        NSLog(@"抱歉，未找到结果");
+    }
 }
 
 
